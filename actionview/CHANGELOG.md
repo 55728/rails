@@ -1,3 +1,9 @@
+*   Fix `collection_radio_buttons` and `collection_check_boxes` generating
+    a label `for` attribute that does not match the input `id` when a
+    collection value is `nil`.
+
+    *Kenta Ishizaki*
+
 *   Skip blank attribute names in tag helpers to avoid generating invalid HTML.
 
     *Mike Dalessio*
