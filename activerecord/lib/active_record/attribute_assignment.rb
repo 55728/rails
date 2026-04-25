@@ -59,6 +59,7 @@ module ActiveRecord
 
       def extract_callstack_for_multiparameter_attributes(pairs)
         attributes = {}
+        errors = []
 
         pairs.each do |(multiparameter_name, value)|
           attribute_name = multiparameter_name.split("(").first
@@ -66,6 +67,17 @@ module ActiveRecord
 
           parameter_value = value.empty? ? nil : type_cast_attribute_value(multiparameter_name, value)
           attributes[attribute_name][find_parameter_position(multiparameter_name)] ||= parameter_value
+        rescue ArgumentError => ex
+          errors << AttributeAssignmentError.new(
+            "invalid multiparameter attribute name #{multiparameter_name.inspect} (#{ex.message})",
+            ex,
+            multiparameter_name.split("(").first
+          )
+        end
+
+        unless errors.empty?
+          error_descriptions = errors.map(&:message).join(",")
+          raise MultiparameterAssignmentErrors.new(errors), "#{errors.size} error(s) on assignment of multiparameter attributes [#{error_descriptions}]"
         end
 
         attributes
@@ -76,7 +88,9 @@ module ActiveRecord
       end
 
       def find_parameter_position(multiparameter_name)
-        multiparameter_name.scan(/\(([0-9]*).*\)/).first.first.to_i
+        match = multiparameter_name.match(/\(([0-9]*).*\)/)
+        raise ArgumentError, "could not parse parameter position from #{multiparameter_name.inspect}" unless match
+        match[1].to_i
       end
   end
 end
