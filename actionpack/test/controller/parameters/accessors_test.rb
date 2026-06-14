@@ -383,6 +383,16 @@ class ParametersAccessorsTest < ActiveSupport::TestCase
     assert_kind_of ActionController::Parameters, @params.transform_values.each { |v| v }
   end
 
+  test "select without a block returns an enumerator" do
+    assert_kind_of Enumerator, @params.select
+    assert_kind_of ActionController::Parameters, @params.select.each { |k, v| true }
+  end
+
+  test "reject without a block returns an enumerator" do
+    assert_kind_of Enumerator, @params.reject
+    assert_kind_of ActionController::Parameters, @params.reject.each { |k, v| false }
+  end
+
   test "transform_values! converts hashes to parameters" do
     @params.transform_values! do |value|
       assert_kind_of ActionController::Parameters, value
