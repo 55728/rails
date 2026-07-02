@@ -1,3 +1,17 @@
+*   Add `this_quarter?` to Date/Time
+
+    Completes the `this_*?` predicate family (`this_week?`, `this_month?`,
+    `this_year?`), returning true if the date/time falls within the current
+    quarter.
+
+    ```ruby
+    # Assuming Date.current is Tue, 15 Feb 2000 (Q1)
+    Date.new(2000, 3, 31).this_quarter?  # => true
+    Date.new(2000, 4, 1).this_quarter?   # => false
+    ```
+
+    *Kenta Ishizaki*
+
 *   Added `ActiveSupport::ProxyLogger`.
 
     The proxy logger, is a logger that forwards all received logs to another
